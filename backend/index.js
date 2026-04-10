@@ -42,7 +42,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local frontend
-      "https://smartvoice-ai-assistant.vercel.app" // 👈 baad me frontend deploy hoga
+      "https://smart-voice-ai-assistant.vercel.app" // 👈 baad me frontend deploy hoga
     ],
     credentials: true,
   })
