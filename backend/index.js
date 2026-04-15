@@ -12,18 +12,17 @@ dotenv.config();
 const app = express();
 
 /* ================= CORS ================= */
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://smart-voice-ai-assistant.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://smart-voice-ai-assistant.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
 
-app.options("*", cors()); // 🔥 IMPORTANT
+// ❌ isko hata de (ye crash kar raha tha)
+// app.options("*", cors());
 
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
