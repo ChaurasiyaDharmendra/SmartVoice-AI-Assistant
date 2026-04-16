@@ -56,7 +56,6 @@ function Home() {
 
     try {
       recognitionRef.current.start();
-      console.log("🎤 Listening started");
     } catch (err) {
       console.warn("Mic already running");
     }
@@ -104,55 +103,35 @@ function Home() {
     }
   };
 
-  /* ================= SPEECH RECOGNITION ================= */
+  /* ================= SPEECH ================= */
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Speech Recognition not supported in this browser");
+      alert("Speech Recognition not supported");
       return;
     }
 
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
 
     recognitionRef.current = recognition;
 
-    recognition.onstart = () => {
-      setListening(true);
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-    };
-
-    recognition.onerror = (e) => {
-      console.warn("Speech error:", e.error);
-      setListening(false);
-    };
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
 
     recognition.onresult = async (e) => {
       const transcript = e.results[0][0].transcript.trim();
-      console.log("User said:", transcript);
-
       setUserText(transcript);
 
       try {
         const data = await getGeminiResponse(transcript);
         handleCommand(data);
       } catch (err) {
-        console.error("Gemini error", err);
+        console.error(err);
       }
     };
-
-    // greeting once
-    const greet = new SpeechSynthesisUtterance(
-      `Hello ${userData?.name}, click the mic and speak`
-    );
-    window.speechSynthesis.speak(greet);
 
     return () => {
       recognition.stop();
@@ -162,22 +141,29 @@ function Home() {
 
   /* ================= UI ================= */
   return (
-    <div className="w-full h-screen bg-gradient-to-t from-black to-[#02023d] flex flex-col justify-center items-center gap-4">
+    <div
+      className="w-full h-screen flex flex-col justify-center items-center gap-6"
+      style={{
+        background: "linear-gradient(135deg, #020617, #0c4a6e, #020617)",
+      }}
+    >
+      {/* Buttons */}
       <button
         onClick={handleLogOut}
-        className="absolute top-5 right-5 bg-white px-6 py-2 rounded-full"
+        className="absolute top-5 right-5 bg-white px-6 py-2 rounded-full hover:scale-105 transition"
       >
         Log Out
       </button>
 
       <button
         onClick={() => navigate("/customize")}
-        className="absolute top-20 right-5 bg-white px-6 py-2 rounded-full"
+        className="absolute top-20 right-5 bg-white px-6 py-2 rounded-full hover:scale-105 transition"
       >
         Customize your Assistant
       </button>
 
-      <div className="w-[300px] h-[400px] rounded-xl overflow-hidden shadow-lg">
+      {/* Image */}
+      <div className="w-[300px] h-[400px] rounded-xl overflow-hidden shadow-[0_0_40px_#0ea5e9]">
         <img
           src={userData?.assistantImage}
           alt="assistant"
@@ -185,18 +171,21 @@ function Home() {
         />
       </div>
 
-      <h1 className="text-white text-lg">
+      {/* Name */}
+      <h1 className="text-white text-xl font-semibold tracking-wide">
         I'm {userData?.assistantName}
       </h1>
 
+      {/* Mic */}
       <img
         src={listening ? aiImg : userImg}
         alt="mic"
-        className="w-[180px] cursor-pointer"
+        className="w-[180px] cursor-pointer hover:scale-110 transition"
         onClick={startRecognition}
       />
 
-      <h1 className="text-white text-center px-6">
+      {/* Text */}
+      <h1 className="text-white text-center px-6 text-lg max-w-[600px]">
         {userText || aiText}
       </h1>
     </div>
